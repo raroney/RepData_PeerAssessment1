@@ -95,3 +95,24 @@ This result is because our strategy was to estimate missing values with the dail
 Another side-effect of this is that the median of the new data set now matches the daily average exactly. The original median and mean were very close. The new data set injected 8 additional days with exactly the average number of steps, all close to the old median. The new median turned out to be one of these new days.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+* Add a factor to classify data gathered on weekdays vs weekends (go back to the original data set, because our imputed data was based on all days of the week, so could hide some of the differences we want to look for).
+* Calculate new averages for the number of steps in a given interval of the day, this time keeping weekdays and weekends separate.
+* Plot these results on directly comparable time-series plots.
+
+
+```r
+activity.data$daytype <- factor(wday(activity.data$date) %in% c(1,7), 
+                                levels=c(TRUE,FALSE), 
+                                labels=c("weekend", "weekday"))
+data.perinterval.perdaytype <- aggregate(steps ~ interval + daytype, 
+                                         data = activity.data, FUN = mean)
+par(mfrow=c(2,1), mar=c(3,4,1,1), oma=c(1,0,0,0), cex.main=0.8)
+plot(steps ~ interval, data = data.perinterval.perdaytype, type="l", 
+     subset = daytype == "weekend", main="weekend", xlab="")
+plot(steps ~ interval, data = data.perinterval.perdaytype, type="l", 
+     subset = daytype == "weekday", main="weekday", xlab="")
+mtext("5 minute interval", side = 1, outer = TRUE)
+```
+
+![](PA1_template_files/figure-html/weekendweekdaypatterns-1.png) 
+
